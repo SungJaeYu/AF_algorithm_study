@@ -116,11 +116,10 @@ class Game:
         self.user_position = (0, 0)
         self.user = User()
         self.monsters = []
+        self.monster_num = 0
         self.boss = None
-        self.N = N
-        self.M = M
 
-        self.map[N][M] = []
+        self.map[M][N] = []
 
         self.move_dict = {
             'R' : self.move_right,
@@ -143,9 +142,33 @@ class Game:
         self.move_user_all()
         self.print_result()
 
-    def set_game(self):
-        #todo
+    def count_monster_and_item(self):
+        monster_count = 0
+        item_count = 0
+        for row in self.game_map:
+            for c in row:
+                if c == '&' or c == 'M':
+                    monster_count += 1
+                elif c == 'B':
+                    item_count += 1
+        return monster_count, item_count
+                    
 
+    def set_game(self):
+        self.N, self.M = map(int, sys.stdin.readline().split())
+        self.game_map = [[*sys.stdin.readline().strip()] for i in range(self.N)]
+        self.monster_num, self.item_num = self.count_monster_and_item()
+        self.moves = [*sys.stdin.readline().strip()]
+        for i in range(self.monster_num):
+            r, c, s, w, a, h, e = sys.stdin.readline().split()
+            if self.game_map[r][c] == 'M':
+                self.boss = Monster(r, c, s, w, a, h, e)
+            else:
+                self.monsters.append(Monster(r, c, s, w, a, h, e))
+        for i in range(self.item_num):
+            r, c, t, s = sys.stdin.readline().split()
+            self.items.append(Item(r, c, t, s))
+    
     def move_user_all(self):
         for move in moves:
             move_user(move)
