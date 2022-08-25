@@ -12,32 +12,33 @@ BOSS = 'M'
 
 MAX_ACCESSORIES_NUM = 4
 
-class Weapon:
-    def __init__(self, attack):
-        self.attack = attack
+class Item:
+    def __init__(self, r, c, t, s):
+        self.R = r
+        self.C = c
+        self.T = t
+        self.S = s
+    def get_category(self):
+        return self.T
 
+class Weapon(Item):
     def get_attack(self):
-        return self.attack
+        return self.S
 
-class Armor:
-    def __init__(self, defense):
-        self.defense = defense
-
+class Armor(Item):
     def get_defense(self):
-        return self.defense
+        return self.S
 
-class Accessories:
-    EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
-
-    def __init__(self, effect):
-        self.effect = effect
-
+class Accessories(Item):
+    #EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
     def get_effect(self):
-        return self.effect
+        return self.S
         
 
 class User:
-    def __init__(self):
+    def __init__(self, R, C):
+        self.default_position = (R, C)
+        self.position = (R, C)
         self.max_hp = 20
         self.current_hp = 20
         self.attack = 2
@@ -46,9 +47,17 @@ class User:
         self.level = 1
         self.weapon = None
         self.armor = None
-        self.accessories_list = []
         self.accessories_num = 0
-        
+        self.effect_flag = {"HR" : False, "RE" : False, "CO" : False,
+                            "EX" : False, "DX" : False, "HU" : False,
+                            "CU" : False}
+
+    def take_monster_exp(self, exp):
+        self.exp += exp
+        flag = check_level_up()
+        if flag:
+            level_up()
+
     def check_level_up(self):
         if exp >= 5 * self.level:
             return True
@@ -61,6 +70,17 @@ class User:
         
         self.current_hp = self.max_hp
 
+    def equip_item(self, item):
+        category = item.get_category()
+        if category == 'W':
+            self.equip_weapon(Weapon(item))
+        elif category == 'A':
+            self.equip_armor(Armor(item))
+        elif category == 'O':
+            self.equip_accessories(item)
+        else:
+            assert(0)
+
     def equip_weapon(self, weapon):
         if self.weapon is not None:
             self.attack = self.attack - self.weapon.get_attack()
@@ -72,16 +92,79 @@ class User:
     def equip_armor(self, armor):
         if self.armor is not None:
             self.defense = self.defense - self.armor.get_defense()
+            del self.armor
         self.armor = armor
         self.defense = self.defense + armor.get_defense()
 
     def equip_accessories(self, new_acc):
+        effect = new_acc.get_effect()
+
         if self.accessories_num == 4:
-            return False
-        for acc in self.accessories_list:
-            if acc.get_effect() == new_acc.get_effect():
+            return
+        if self.effect_flag[new_acc] == True:
+            return
+        
+        self.effect_flag[new_acc] = True
+        self.accessories_num += 1
+
+    def step_on_the_trap(self):
+        if self.effect_flag['DX']:
+            self.hp = self.hp - 1
+        else:
+            self.hp = self.hp - 5
+
+    def get_damage(self, attack):
+        damage = max(1, attack - self.defense)
+        self.hp = self.hp - damage
+
+    def check_death(self):
+        if self.hp <= 0:
+            if self.effect_flag['RE']:
+                self.hp = self.max_hp
+                self.R = self.default_R
+                self.C = self.default_C
+                self.effect_flag['RE'] = False
                 return False
-        self.accessories.append(accessories)
+            else:
+                return True
+
+    def fight_monster(self, monster, boss_flag = False):
+        if self.effect_flag['HR']:
+            self.hp = self.hp + 3
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
+
+        if self.effect_flag['CO'] and self.effect_flag['DX']:
+            attack = self.attack * 3
+        elif self.effect_flag['CO']:
+            attack = self.attack * 2
+        else:
+            attack = self.attack
+        monster.get_damage(attack)
+        if monster.get_hp() <= 0:
+            return True
+        monster_attack = monster.get_attack()
+        self.get_damage(monster_attack)
+        if self.hp <= 0:
+            death_flag = self.check_death()
+            if death_flag:
+                return False
+            else:
+                monster.set_max_hp()
+            
+        attack = self.attack
+        while True:
+            monster.get_damage(attack)
+            if monster.get_hp() <= 0:
+                return True
+            self.get_damage(monster_attack)
+            if self.hp <= 0:
+                death_flag = self.check_death()
+                if death_flag:
+                    return False
+                else:
+                    monster.set_max_hp()
+
 
 class Monster:
     def __init__(self, R, C, S, W, A, H, E):
@@ -101,19 +184,21 @@ class Monster:
     def get_attack(self):
         return self.attack
 
-    def get_defense(self):
-        return self.defense
-
     def get_hp(self):
-        return hp
+        return self.hp
 
     def get_exp(self):
-        return exp
+        return self.exp
+
+    def get_damage(self, attack):
+        damage = max(1, attack - self.defense)
+        self.hp = self.hp - damage
 
 class Game:
  
     def __init__(self, N, M):
         self.user_position = (0, 0)
+        self.command_position = (0, 0)
         self.user = User()
         self.monsters = []
         self.monster_num = 0
@@ -147,9 +232,9 @@ class Game:
         item_count = 0
         for row in self.game_map:
             for c in row:
-                if c == '&' or c == 'M':
+                if c == MONSTER or c == BOSS:
                     monster_count += 1
-                elif c == 'B':
+                elif c == ITEM_BOX:
                     item_count += 1
         return monster_count, item_count
                     
@@ -171,29 +256,65 @@ class Game:
     
     def move_user_all(self):
         for move in moves:
+            if self.end_flag == True:
+                return
             move_user(move)
-
-    def print_result():
-        area = self.map[user_position]
-        self.area_dict[area]()
 
     def move_user(self, move):
         self.move_dict[move]()
+        r, c = self.command_position
+        if r >= N or c >= M:
+            return
         self.check_current_position()
         self.check_user_state()
 
     def check_current_position(self):
-        i
+        r, c = self.command_position
+        area = self.game_map[r][c]
+        if area == WALL:
+            return
+        self.user_position = self.command_position
+        self.area_dict[area]()
+
+    def check_blank(self):
+        return
+
+    def check_wall(self):
+        assert(0)
+
+    def check_itembox(self):
+        r, c = self.user_position
+        for item in items:
+            if r == item.R and c == item.C:
+                self.user.equip_item(item)
+                return
+        assert(0)
+
+    def check_trap(self):
+        self.user.step_on_the_trap()
+
+    def check_monster(self):
+        r, c = self.user_position
+        for monster in monsters:
+            if r == monster.R and c == monster.C:
+                self.user.fight_monster(monster)
+        assert(0)
+
+    def check_boss(self):
+        r, c = self.boss.get_position()
+        self.user.fight_monster(self.boss)
+        self.end_flag = True
+
     def move_right(self):
-        self.user_position.first += 1
+        self.command_position.first += 1
     
     def move_left(self):
-        self.user_position.first -= 1
+        self.command_position.first -= 1
 
     def move_up(self):
-        self.user_position.second -= 1
+        self.command_position.second -= 1
 
     def move_down(self):
-        self.user_position.second += 1
+        self.command_position.second += 1
 
         
