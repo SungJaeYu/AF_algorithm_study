@@ -19,11 +19,11 @@ class ItemBox:
     
     def open_box(self):
         if self.type == WEAPON:
-            return Weapon(int(self.S))
+            return Weapon(int(self.data))
         elif self.type == ARMOR:
-            return Armor(int(self.S))
+            return Armor(int(self.data))
         elif self.type == ACCESSORIE:
-            return Accessories(self.S)
+            return Accessories(self.data)
         else:
             assert(0, 'Not exist Item Type')
 

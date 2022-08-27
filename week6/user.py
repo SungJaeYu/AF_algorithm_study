@@ -1,12 +1,12 @@
-import Monster from monster
-import ItemBox, Weapon, Armor, Accessories from item
+from monster import Monster
+from item import ItemBox, Weapon, Armor, Accessories
 
 class User:
     def __init__(self, R, C):
         self.default_position = (R, C)
         self.position = (R, C)
         self.max_hp = 20
-        self.current_hp = 20
+        self.hp = 20
         self.attack = 2
         self.defense = 2
         self.exp = 0
@@ -18,22 +18,23 @@ class User:
                             "EX" : False, "DX" : False, "HU" : False,
                             "CU" : False}
 
-    def take_monster_exp(self, exp):
-        self.exp += exp
-        is_level_up = check_level_up()
+    def take_monster_exp(self, monster_exp):
+        self.exp += monster_exp
+        is_level_up = self.check_level_up()
         if is_level_up:
-            level_up()
+            self.level_up()
 
     def check_level_up(self):
-        if exp >= 5 * self.level:
+        if self.exp >= 5 * self.level:
             return True
         return False
     
     def level_up(self):
+        self.level += 1
         self.max_hp = self.max_hp + 5
         self.attack = self.attack + 2
         self.defense = self.defense + 2
-        
+        self.exp = 0
         self.hp = self.max_hp
 
     def equip_item(self, itembox):
@@ -68,10 +69,10 @@ class User:
 
         if self.accessories_num == 4:
             return
-        if self.effect_flag[new_acc] == True:
+        if self.effect_flag[effect] == True:
             return
         
-        self.effect_flag[new_acc] = True
+        self.effect_flag[effect] = True
         self.accessories_num += 1
 
     def step_on_the_trap(self):
@@ -91,6 +92,12 @@ class User:
     def get_damage(self, attack):
         damage = max(1, attack - self.defense)
         self.hp = self.hp - damage
+
+    def reincarnation(self):
+        self.position = self.default_position
+        self.effect_flag['RE'] = False
+        self.hp = self.max_hp
+        self.accessories_num -= 1
 
     def fight_monster(self, monster, boss_flag = False):
         is_death = False
@@ -118,6 +125,7 @@ class User:
 
         # Check Monster Death
         if monster.get_hp() <= 0:
+            self.take_monster_exp(monster.get_exp())
             return is_death
         # Monster attack, User get damaged
         if boss_flag == True and self.effect_flag['HU']:
@@ -131,6 +139,7 @@ class User:
             if self.effect_flag['RE']:
                 self.reincarnation()
                 monster.reincarnation()
+                return False
             else:
                 is_death = True
                 return is_death
@@ -140,12 +149,14 @@ class User:
         while True:
             monster.get_damage(attack)
             if monster.get_hp() <= 0:
+                self.take_monster_exp(monster.get_exp())
                 return is_death
             self.get_damage(monster_attack)
             if self.hp <= 0:
                 if self.effect_flag['RE']:
                     self.reincarnation()
                     monster.reincarnation()
+                    return False
                 else:
                     is_death = True
                     return is_death
