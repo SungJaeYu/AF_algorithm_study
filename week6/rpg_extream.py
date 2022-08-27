@@ -1,58 +1,15 @@
+import User from user
+import Monster from monster
+import ItemBox, Weapon, Armor, Accessories from item
+
 BLANK = '.'
 WALL = '#'
 ITEM_BOX = 'B'
-WEAPON = 'W'
-ARMOR = 'A'
-ORNAMENT = 'O'
 TRAP = '^'
 MONSTER = '&'
 BOSS = 'M'
 USER = '@'
-
-MAX_ACCESSORIES_NUM = 4
-
-class ItemBox:
-    def __init__(self, r, c, t, s):
-        self.R = r
-        self.C = c
-        self.T = t
-        self.S = s
-
-    def get_category(self):
-        return self.T
-    
-    def open_itembox(self):
-        if self.T == 'W':
-            return Weapon(int(self.S))
-        elif self.T == 'A':
-            return Armor(int(self.S))
-        else:
-            return Accessories(self.S)
-
-class Weapon:
-    def __init__(self, attack):
-        self.attack = attack
-
-    def get_attack(self):
-        return self.attack
-
-class Armor(Item):
-    def __init__(self, defense):
-        self.defense = defense
-    
-    def get_defense(self):
-        return self.defense
-
-class Accessories(Item):
-    EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
-
-    def __init__(self, effect):
-        self.effect = effect
-        assert(effect in EFFECT)    
-    
-    def get_effect(self):
-        return self.S
-        
+       
 class Game:
     def __init__(self):
         self.command_position = (0, 0)
@@ -79,27 +36,29 @@ class Game:
 
     def run(self):
         self.set_game()
-        self.move_user_all()
+        self.user_moves()
         self.print_result()
 
-    def count_monster_and_item(self):
-        monster_count = 0
-        item_count = 0
+    def load_map(self):
+        self.monster_count = 0
+        self.item_count = 0
         for row in self.game_map:
             for c in row:
                 if c == MONSTER or c == BOSS:
-                    monster_count += 1
+                    self.monster_count += 1
                 elif c == ITEM_BOX:
-                    item_count += 1
+                    self.item_count += 1
                 elif c == USER:
-                    self.user = User(row, 
-        return monster_count, item_count
+                    self.user = User() 
                     
+
+    def print_result(self):
+        #TODO: make
 
     def set_game(self):
         self.N, self.M = map(int, sys.stdin.readline().split())
         self.game_map = [[*sys.stdin.readline().strip()] for i in range(self.N)]
-        self.monster_num, self.item_num = self.count_monster_and_item()
+        self.load_map()
         self.moves = [*sys.stdin.readline().strip()]
         for i in range(self.monster_num):
             r, c, s, w, a, h, e = sys.stdin.readline().split()
@@ -111,7 +70,7 @@ class Game:
             r, c, t, s = sys.stdin.readline().split()
             self.items.append(Item(r, c, t, s))
     
-    def move_user_all(self):
+    def user_moves(self):
         for move in moves:
             if self.end_flag == True:
                 return

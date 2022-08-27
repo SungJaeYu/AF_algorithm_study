@@ -1,3 +1,5 @@
+import Monster from monster
+
 class User:
     def __init__(self, R, C):
         self.default_position = (R, C)
