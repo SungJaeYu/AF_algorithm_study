@@ -1,5 +1,3 @@
-
-
 BLANK = '.'
 WALL = '#'
 ITEM_BOX = 'B'
@@ -9,202 +7,59 @@ ORNAMENT = 'O'
 TRAP = '^'
 MONSTER = '&'
 BOSS = 'M'
+USER = '@'
 
 MAX_ACCESSORIES_NUM = 4
 
-class Item:
+class ItemBox:
     def __init__(self, r, c, t, s):
         self.R = r
         self.C = c
         self.T = t
         self.S = s
+
     def get_category(self):
         return self.T
-
-class Weapon(Item):
-    def get_attack(self):
-        return self.S
-
-class Armor(Item):
-    def get_defense(self):
-        return self.S
-
-class Accessories(Item):
-    #EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
-    def get_effect(self):
-        return self.S
-        
-
-class User:
-    def __init__(self, R, C):
-        self.default_position = (R, C)
-        self.position = (R, C)
-        self.max_hp = 20
-        self.current_hp = 20
-        self.attack = 2
-        self.defense = 2
-        self.exp = 0
-        self.level = 1
-        self.weapon = None
-        self.armor = None
-        self.accessories_num = 0
-        self.effect_flag = {"HR" : False, "RE" : False, "CO" : False,
-                            "EX" : False, "DX" : False, "HU" : False,
-                            "CU" : False}
-
-    def take_monster_exp(self, exp):
-        self.exp += exp
-        flag = check_level_up()
-        if flag:
-            level_up()
-
-    def check_level_up(self):
-        if exp >= 5 * self.level:
-            return True
-        return False
     
-    def level_up(self):
-        self.max_hp = self.max_hp + 5
-        self.attack = self.attack + 2
-        self.defense = self.defense + 2
-        
-        self.current_hp = self.max_hp
-
-    def equip_item(self, item):
-        category = item.get_category()
-        if category == 'W':
-            self.equip_weapon(Weapon(item))
-        elif category == 'A':
-            self.equip_armor(Armor(item))
-        elif category == 'O':
-            self.equip_accessories(item)
+    def open_itembox(self):
+        if self.T == 'W':
+            return Weapon(int(self.S))
+        elif self.T == 'A':
+            return Armor(int(self.S))
         else:
-            assert(0)
+            return Accessories(self.S)
 
-    def equip_weapon(self, weapon):
-        if self.weapon is not None:
-            self.attack = self.attack - self.weapon.get_attack()
-            del self.weapon
-
-        self.weapon = weapon
-        self.attack = self.attack + weapon.get_attack()
-
-    def equip_armor(self, armor):
-        if self.armor is not None:
-            self.defense = self.defense - self.armor.get_defense()
-            del self.armor
-        self.armor = armor
-        self.defense = self.defense + armor.get_defense()
-
-    def equip_accessories(self, new_acc):
-        effect = new_acc.get_effect()
-
-        if self.accessories_num == 4:
-            return
-        if self.effect_flag[new_acc] == True:
-            return
-        
-        self.effect_flag[new_acc] = True
-        self.accessories_num += 1
-
-    def step_on_the_trap(self):
-        if self.effect_flag['DX']:
-            self.hp = self.hp - 1
-        else:
-            self.hp = self.hp - 5
-
-    def get_damage(self, attack):
-        damage = max(1, attack - self.defense)
-        self.hp = self.hp - damage
-
-    def check_death(self):
-        if self.hp <= 0:
-            if self.effect_flag['RE']:
-                self.hp = self.max_hp
-                self.R = self.default_R
-                self.C = self.default_C
-                self.effect_flag['RE'] = False
-                return False
-            else:
-                return True
-
-    def fight_monster(self, monster, boss_flag = False):
-        if self.effect_flag['HR']:
-            self.hp = self.hp + 3
-        if self.hp > self.max_hp:
-            self.hp = self.max_hp
-
-        if self.effect_flag['CO'] and self.effect_flag['DX']:
-            attack = self.attack * 3
-        elif self.effect_flag['CO']:
-            attack = self.attack * 2
-        else:
-            attack = self.attack
-        monster.get_damage(attack)
-        if monster.get_hp() <= 0:
-            return True
-        monster_attack = monster.get_attack()
-        self.get_damage(monster_attack)
-        if self.hp <= 0:
-            death_flag = self.check_death()
-            if death_flag:
-                return False
-            else:
-                monster.set_max_hp()
-            
-        attack = self.attack
-        while True:
-            monster.get_damage(attack)
-            if monster.get_hp() <= 0:
-                return True
-            self.get_damage(monster_attack)
-            if self.hp <= 0:
-                death_flag = self.check_death()
-                if death_flag:
-                    return False
-                else:
-                    monster.set_max_hp()
-
-
-class Monster:
-    def __init__(self, R, C, S, W, A, H, E):
-        self.position = (R, C)
-        self.name = S
-        self.attack = W
-        self.defense = A
-        self.hp = H
-        self.exp = E
-
-    def get_position(self):
-        return self.position
-
-    def get_name(self):
-        return self.name
+class Weapon:
+    def __init__(self, attack):
+        self.attack = attack
 
     def get_attack(self):
         return self.attack
 
-    def get_hp(self):
-        return self.hp
+class Armor(Item):
+    def __init__(self, defense):
+        self.defense = defense
+    
+    def get_defense(self):
+        return self.defense
 
-    def get_exp(self):
-        return self.exp
+class Accessories(Item):
+    EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
 
-    def get_damage(self, attack):
-        damage = max(1, attack - self.defense)
-        self.hp = self.hp - damage
-
+    def __init__(self, effect):
+        self.effect = effect
+        assert(effect in EFFECT)    
+    
+    def get_effect(self):
+        return self.S
+        
 class Game:
- 
-    def __init__(self, N, M):
-        self.user_position = (0, 0)
+    def __init__(self):
         self.command_position = (0, 0)
-        self.user = User()
         self.monsters = []
         self.monster_num = 0
         self.boss = None
-
-        self.map[M][N] = []
+        self.killed_name = None
 
         self.move_dict = {
             'R' : self.move_right,
@@ -236,6 +91,8 @@ class Game:
                     monster_count += 1
                 elif c == ITEM_BOX:
                     item_count += 1
+                elif c == USER:
+                    self.user = User(row, 
         return monster_count, item_count
                     
 
@@ -259,6 +116,8 @@ class Game:
             if self.end_flag == True:
                 return
             move_user(move)
+        print('Press any key to continue.')
+        self.end_flag = True
 
     def move_user(self, move):
         self.move_dict[move]()
@@ -291,18 +150,35 @@ class Game:
         assert(0)
 
     def check_trap(self):
-        self.user.step_on_the_trap()
-
+        is_death = self.user.step_on_the_trap()
+        if is_death:
+            self.killed_name = 'SPIKE TRAP'
+        
     def check_monster(self):
-        r, c = self.user_position
+        r, c = self.user.get_position
         for monster in monsters:
-            if r == monster.R and c == monster.C:
-                self.user.fight_monster(monster)
+            if self.user.position == monster.position:
+                is_death = self.user.fight_monster(monster)
+                if flag:
+                    self.fail = True
+                    self.killed_name = monster.get_name()
+                    self.end_flag = True
+                else:
+                    self.game_map[r][c] = BLANK
+                    self.monsters.remove(monster)
+                return
         assert(0)
 
     def check_boss(self):
         r, c = self.boss.get_position()
-        self.user.fight_monster(self.boss)
+        flag = self.user.fight_monster(self.boss)
+        
+        if flag:
+            self.success = True
+            self.game_map[r][c] = BLANK
+        else:
+            self.fail = True
+
         self.end_flag = True
 
     def move_right(self):
