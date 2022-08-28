@@ -132,7 +132,7 @@ class User:
         self.get_damage(monster_attack)
         
         # Check User Death
-        if self.hp <= 0:
+        if self.hp == 0:
            return True 
         # Fights except first fight
         attack = self.attack
@@ -147,6 +147,6 @@ class User:
                         self.hp = self.max_hp
                 return is_death
             self.get_damage(monster_attack)
-            if self.hp <= 0:
+            if self.hp == 0:
                 return True
 
