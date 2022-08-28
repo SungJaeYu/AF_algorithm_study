@@ -95,7 +95,7 @@ class Game:
         if self.end_flag and self.success:
             print('YOU WIN!')
         elif self.end_flag:
-            print(f'YOU HAVE BEEN KILLED BY {self.killed_name}')
+            print(f'YOU HAVE BEEN KILLED BY {self.killed_name}..')
         else:
             print('Press any key to continue.')       
 
