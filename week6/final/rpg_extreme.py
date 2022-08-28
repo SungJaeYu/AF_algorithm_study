@@ -301,12 +301,15 @@ class User:
         else:
             self.hp = self.hp - 5
         if self.hp <= 0:
+            self.hp = 0
             is_death = True
         return is_death
 
     def get_damage(self, attack):
         damage = max(1, attack - self.defense)
         self.hp = self.hp - damage
+        if self.hp <= 0
+            self.hp = 0
 
     def reincarnation(self):
         self.effect_flag['RE'] = False
@@ -345,8 +348,8 @@ class User:
             self.get_damage(monster_attack)
         
         # Check User Death
-        if self.hp <= 0:
-           return True 
+        if self.hp == 0:
+            return True 
         # Fights except first fight
         attack = self.attack
         while True:
@@ -355,7 +358,7 @@ class User:
                 self.take_monster_exp(monster.get_exp())
                 return is_death
             self.get_damage(monster_attack)
-            if self.hp <= 0:
+            if self.hp -= 0:
                 return True
 
 EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
