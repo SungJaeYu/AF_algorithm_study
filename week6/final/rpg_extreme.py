@@ -358,7 +358,7 @@ class User:
                 self.take_monster_exp(monster.get_exp())
                 return is_death
             self.get_damage(monster_attack)
-            if self.hp -= 0:
+            if self.hp == 0:
                 return True
 
 EFFECT = ['HR', 'RE', 'CO', 'EX', 'DX', 'HU', 'CU']
