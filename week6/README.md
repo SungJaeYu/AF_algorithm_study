@@ -1,12 +1,16 @@
 # WEEK 6 : RPG EXTREME
 
-GAME - USER
-     - MONSTER
-     - ITEM - ITEMBOX
-            - WEAPON
-            - ARMOR
-            - ACCESSORIES
+CLASS
+* GAME
+* USER
+* MONSTER
+* ITEM
+  * ITEMBOX
+  * WEAPON
+  * ARMOR
+  * ACCESSORIES
 
-FINAL : For Baekjoon submission
-
-TEST : For Unit Test
+FILE
+* MAIN : main for class divided code
+* FINAL : For Baekjoon submission
+* TEST : For Unit Test
