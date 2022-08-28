@@ -81,12 +81,15 @@ class User:
         else:
             self.hp = self.hp - 5
         if self.hp <= 0:
+            self.hp = 0
             is_death = True
         return is_death
 
     def get_damage(self, attack):
         damage = max(1, attack - self.defense)
         self.hp = self.hp - damage
+        if self.hp <= 0:
+            self.hp = 0
 
     def reincarnation(self):
         self.effect_flag['RE'] = False
