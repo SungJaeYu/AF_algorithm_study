@@ -44,7 +44,6 @@ class Armor:
 class Accessories:
     def __init__(self, effect):
         self.effect = effect
-        assert(effect in EFFECT, 'Not exist Effect.')    
     
     def get_effect(self):
         return self.effect
