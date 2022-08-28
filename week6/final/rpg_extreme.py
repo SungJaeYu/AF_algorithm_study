@@ -188,7 +188,7 @@ class Game:
 
     def check_boss(self):
         r, c = self.user_position
-        is_death = self.user.fight_monster(self.boss)
+        is_death = self.user.fight_monster(self.boss, True)
         
         if is_death:
             if self.user.effect_flag['RE'] == True:
@@ -244,6 +244,12 @@ class User:
         is_level_up = self.check_level_up()
         if is_level_up:
             self.level_up()
+
+        if self.effect_flag['HR']:
+            self.hp = self.hp + 3
+            if self.hp > self.max_hp:
+                self.hp = self.max_hp
+
 
     def check_level_up(self):
         if self.exp >= 5 * self.level:
@@ -329,18 +335,14 @@ class User:
         # Check Monster Death
         if monster.get_hp() <= 0:
             self.take_monster_exp(monster.get_exp())
-            # HR Effect
-            if self.effect_flag['HR']:
-                self.hp = self.hp + 3
-                if self.hp > self.max_hp:
-                    self.hp = self.max_hp
             return is_death
         # Monster attack, User get damaged
+        monster_attack = monster.get_attack()
         if boss_flag == True and self.effect_flag['HU']:
-            monster_attack = 0
+            # 0 Damage
+            pass
         else:
-            monster_attack = monster.get_attack()
-        self.get_damage(monster_attack)
+            self.get_damage(monster_attack)
         
         # Check User Death
         if self.hp <= 0:
@@ -351,11 +353,6 @@ class User:
             monster.get_damage(attack)
             if monster.get_hp() <= 0:
                 self.take_monster_exp(monster.get_exp())
-                # HR Effect
-                if self.effect_flag['HR']:
-                    self.hp = self.hp + 3
-                    if self.hp > self.max_hp:
-                        self.hp = self.max_hp
                 return is_death
             self.get_damage(monster_attack)
             if self.hp <= 0:
@@ -387,8 +384,6 @@ class ItemBox:
             return Armor(int(self.data))
         elif self.type == ACCESSORIE:
             return Accessories(self.data)
-        else:
-            assert(0, 'Not exist Item Type')
 
 class Weapon:
     def __init__(self, attack):

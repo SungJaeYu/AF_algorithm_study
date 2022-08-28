@@ -25,7 +25,7 @@ class ItemBox:
         elif self.type == ACCESSORIE:
             return Accessories(self.data)
         else:
-            assert(0, 'Not exist Item Type')
+            #assert(0, 'Not exist Item Type')
 
 class Weapon:
     def __init__(self, attack):

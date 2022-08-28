@@ -192,7 +192,7 @@ class Game:
 
     def check_boss(self):
         r, c = self.user_position
-        is_death = self.user.fight_monster(self.boss)
+        is_death = self.user.fight_monster(self.boss, True)
         
         if is_death:
             if self.user.effect_flag['RE'] == True:
