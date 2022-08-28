@@ -308,7 +308,7 @@ class User:
     def get_damage(self, attack):
         damage = max(1, attack - self.defense)
         self.hp = self.hp - damage
-        if self.hp <= 0
+        if self.hp <= 0:
             self.hp = 0
 
     def reincarnation(self):
