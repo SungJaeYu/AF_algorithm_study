@@ -22,8 +22,9 @@ def main():
             stack.append(c)
         else:
             print(c, end='')
-    if len(stack) != 0:
-        while len(stack) != 0:
-            print(stack.pop(), end='')
+    while len(stack) != 0:
+        temp = stack.pop()
+        if temp != OPEN_BRACKET:
+            print(temp, end='')
 
 main()
