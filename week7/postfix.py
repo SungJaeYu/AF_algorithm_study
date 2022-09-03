@@ -27,6 +27,13 @@ def main():
                 print(temp, end='')
         elif c == OPEN_BRACKET or c in OPERATOR_HIGH:
             stack.append(c)
+        elif c in OPERATOR_HIGH:
+            while len(stack) != 0:
+                if stack[-1] not in OPERATOR_HIGH:
+                    break;
+                temp = stack.pop()
+                print(temp, end='')
+            stack.append(c)
         else:
             print(c, end='')
     while len(stack) != 0:
