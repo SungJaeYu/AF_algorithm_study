@@ -13,9 +13,10 @@ def main():
         if c in OPERATOR_LOW or c == CLOSE_BRACKET:
            while len(stack) != 0:
                temp = stack.pop()
-               print(temp, end='')
                if temp == OPEN_BRACKET:
                    break
+               print(temp, end='')
+               
            if c in OPERATOR_LOW:        
                stack.append(c)
         elif c == OPEN_BRACKET or c in OPERATOR_HIGH:
