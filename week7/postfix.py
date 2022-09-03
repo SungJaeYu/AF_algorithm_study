@@ -10,15 +10,21 @@ output = []
 def main():
     calculation = [*sys.stdin.readline().strip()]
     for c in calculation:
-        if c in OPERATOR_LOW or c == CLOSE_BRACKET:
+        if c in OPERATOR_LOW:
            while len(stack) != 0:
-               temp = stack.pop()
-               if temp == OPEN_BRACKET:
+               if stack[-1] == OPEN_BRACKET:
                    break
+               temp = stack.pop()
                print(temp, end='')
                
            if c in OPERATOR_LOW:        
                stack.append(c)
+        elif c == CLOSE_BRACKET:
+            while len(stack) != 0:
+                temp = stack.pop()
+                if temp == OPEN_BRACKET:
+                    break;
+                print(temp, end='')
         elif c == OPEN_BRACKET or c in OPERATOR_HIGH:
             stack.append(c)
         else:
