@@ -3,14 +3,6 @@ import sys
 OPERATOR = ['+', '-', '*', '/', '(', ')']
 stack = []
 
-proc_func = {'+': proc_operator_low,
-             '-': proc_operator_low,
-             '*': proc_operator_high,
-             '/': proc_operator_high,
-             '(': proc_open_bracket,
-             ')': proc_close_bracket,
-             }
-
 def proc_operator_low(c):
     while len(stack) != 0:
         if stack[-1] == OPEN_BRACKET:
@@ -34,6 +26,14 @@ def proc_close_bracket(c):
         if temp == OPEN_BRACKET:
             break;
         print(temp, end='')
+
+proc_func = {'+': proc_operator_low,
+             '-': proc_operator_low,
+             '*': proc_operator_high,
+             '/': proc_operator_high,
+             '(': proc_open_bracket,
+             ')': proc_close_bracket,
+             }
 
 
 def main():
