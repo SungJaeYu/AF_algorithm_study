@@ -14,7 +14,7 @@ def proc_operator_low(c):
 
 def proc_operator_high(c):
     while len(stack) != 0:
-        if stack[-1] in OPERATOR_HIGH:
+        if stack[-1] not in OPERATOR_HIGH:
             break;
         print(stack.pop(), end='')
     stack.append(c)
