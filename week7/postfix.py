@@ -25,7 +25,7 @@ def main():
                 if temp == OPEN_BRACKET:
                     break;
                 print(temp, end='')
-        elif c == OPEN_BRACKET or c in OPERATOR_HIGH:
+        elif c == OPEN_BRACKET:
             stack.append(c)
         elif c in OPERATOR_HIGH:
             while len(stack) != 0:
