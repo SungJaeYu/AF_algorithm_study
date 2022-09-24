@@ -24,10 +24,17 @@ def main():
     n, m, v = map(int, sys.stdin.readline().split())
     visited = [False] * (n + 1)
     edges = []
+    lines = []
     for i in range(n + 1):
         edges.append([])
+    
     for i in range(m):
         start, end = map(int, sys.stdin.readline().split())
+        lines.append((start, end))
+    
+    lines.sort()
+    
+    for start, end in lines:
         edges[start].append(end)
         edges[end].append(start)
     dfs(v, edges, visited)
