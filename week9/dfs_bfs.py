@@ -15,21 +15,25 @@ def bfs(v, edges, visited):
     while queue:
         v = queue.popleft()
         print(v, end=' ')
-        for i in edges[v]:
-            if not visited[i]:
-                queue.append(i)
-                visited[i] = True
+        for vertex in edges[v]:
+            if not visited[vertex]:
+                queue.append(vertex)
+                visited[vertex] = True
 
 def main():
     n, m, v = map(int, sys.stdin.readline().split())
     visited = [False] * (n + 1)
     edges = []
     lines = []
-    for i in range(n + 1):
+    for _ in range(n + 1):
         edges.append([])
     
-    for i in range(m):
+    for _ in range(m):
         start, end = map(int, sys.stdin.readline().split())
+        if start > end:
+            temp = start
+            start = end
+            end = temp
         lines.append((start, end))
     
     lines.sort()
