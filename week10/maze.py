@@ -40,7 +40,7 @@ class Maze():
         queue.append([self.start, 0])
         self.visited.add(self.start)
         while queue:
-            position, distance = queue.pop()
+            position, distance = queue.pop(0)
             new_distance = distance + 1
             for vertex in self.graph[position]:
                 if vertex not in self.visited:
