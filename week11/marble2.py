@@ -92,7 +92,6 @@ def bfs(marble_map, red, blue, hole):
     visited.add((red, blue))
     while queue:
         red, blue, move_num = queue.pop(0)
-        print(f"Red : ({red[0]}, {red[1]})  Blue : ({blue[0]}, {blue[1]})")
         new_move_num = move_num + 1
         for direction in DIRECTIONS:
             red_new, blue_new = move(red, blue, hole, marble_map, direction)
