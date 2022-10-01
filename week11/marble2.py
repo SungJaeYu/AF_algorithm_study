@@ -93,6 +93,8 @@ def bfs(marble_map, red, blue, hole):
     while queue:
         red, blue, move_num = queue.pop(0)
         new_move_num = move_num + 1
+        if new_move_num > 10:
+            return -1
         for direction in DIRECTIONS:
             red_new, blue_new = move(red, blue, hole, marble_map, direction)
             if (red_new, blue_new) not in visited:
@@ -128,8 +130,6 @@ def main():
     n, m, input_map = input_data()
     marble_map, red, blue, hole = convert_map(n, m, input_map)
     result = bfs(marble_map, red, blue, hole)
-    if result > 10:
-        result = -1
     print(result)
 
 
