@@ -3,6 +3,8 @@ import sys
 OPERATOR_HIGH = ['*', '/']
 
 OPERATOR = ['+', '-', '*', '/', '(', ')']
+
+
 stack = []
 
 def proc_operator_low(c):
