@@ -128,6 +128,8 @@ def main():
     n, m, input_map = input_data()
     marble_map, red, blue, hole = convert_map(n, m, input_map)
     result = bfs(marble_map, red, blue, hole)
+    if result > 10:
+        result = -1
     print(result)
 
 
