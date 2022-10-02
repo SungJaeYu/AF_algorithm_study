@@ -1,38 +1,38 @@
 import sys
 
-def input_maze_size():
+def input_maze():
     N, M = map(int, sys.stdin.readline().split())
-    return N, M
+    maze = [['0'] * (M + 2)]
+    for _ in range(N):
+        row = list(sys.stdin.readline())
+        row.insert(0, '0')
+        row.append('0')
+        maze.append(row)
+    maze.append(['0']* (M + 2))
+    print(maze)
+    return N, M, maze
 
 class Maze():
-    def __init__(self, N, M):
+    def __init__(self, N, M, maze_map):
         self.size = (N, M)
         self.graph = dict()
         self.visited = set()
-        self.destination = (N-1, M-1)
-        self.start = (0, 0)
-
-    def input_maze(self):
-        N, M = self.size
-        self.map = []
-        for _ in range(N):
-            row = sys.stdin.readline().strip()
-            row_list = list(row)
-            self.map.append(row_list)
+        self.destination = (N, M)
+        self.start = (1, 1)
+        self.map = maze_map
 
     def convert_maze_to_graph(self):
         N, M = self.size
-        for i in range(N):
-            for j in range(M):
+        for i in range(1, N + 1):
+            for j in range(1, M + 1):
                 if self.map[i][j] == '1':
-                    position = (i, j)
                     adj = []
-                    for neighbor in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
+                    neighbors = [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]
+                    for neighbor in neighbors:
                         x, y = neighbor
-                        if x == -1 or y == -1 or x == N or y == M or self.map[x][y] != '1':
-                            continue
-                        adj.append(neighbor)        
-                    self.graph[position] = adj
+                        if self.map[x][y] == '1':
+                            adj.append(neighbor)        
+                    self.graph[(i, j)] = adj
 
     def bfs(self):
         queue = []
@@ -47,7 +47,6 @@ class Maze():
                         return new_distance
                     self.visited.add(vertex)
                     queue.append([vertex, new_distance])
-        assert(0)
 
     def maze_search(self):
         distance = self.bfs()
@@ -56,9 +55,8 @@ class Maze():
 
 
 def main():
-    N, M = input_maze_size()
-    maze = Maze(N, M)
-    maze.input_maze()
+    N, M, maze_map = input_maze()
+    maze = Maze(N, M, maze_map)
     maze.convert_maze_to_graph()
     maze.maze_search()
 
