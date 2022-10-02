@@ -29,10 +29,9 @@ class Maze():
                     adj = []
                     for neighbor in [(i-1, j), (i+1, j), (i, j-1), (i, j+1)]:
                         x, y = neighbor
-                        if x < 0 or y < 0 or x >= N or y >= M:
+                        if x == -1 or y == -1 or x == N or y == M or self.map[x][y] != '1':
                             continue
-                        if self.map[x][y] == '1':
-                            adj.append(neighbor)        
+                        adj.append(neighbor)        
                     self.graph[position] = adj
 
     def bfs(self):
