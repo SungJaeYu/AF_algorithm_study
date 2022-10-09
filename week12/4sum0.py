@@ -24,7 +24,7 @@ def main():
         for j in range(n):
             cd = abcd[i][2] + abcd[j][3]
             if -cd in ab_sum:
-                count += 1
+                count += ab_sum[-cd]
     print(count)
 
 main()
