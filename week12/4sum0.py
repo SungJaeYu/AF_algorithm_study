@@ -9,29 +9,33 @@ def input_data():
     return n, abcd
 
 def sum_two_list(n, abcd):
-    ab_sum = []
-    cd_sum = []
+    ab_sum = dict()
+    cd_sum = dict()
     for i in range(n):
         for j in range(n):
-            ab_sum.append(abcd[i][0] + abcd[j][1])
-            cd_sum.append(abcd[i][2] + abcd[j][3])
+            ab = abcd[i][0] + abcd[j][1]
+            cd = abcd[i][2] + abcd[j][3]
+            if ab in ab_sum:
+                ab_sum[ab] += 1
+            else:
+                ab_sum[ab] = 1
+
+            if cd in cd_sum:
+                cd_sum[cd] += 1
+            else:
+                cd_sum[cd] = 1
 
     return ab_sum, cd_sum
 
 def main():
-    count = 0
+    result = 0
     n, abcd = input_data()
     ab_sum, cd_sum = sum_two_list(n, abcd)
-    sorted_ab_sum = sorted(ab_sum)
-    sorted_cd_sum = sorted(cd_sum)
     bound = 0
-    length_of_sum = n * n
-    for ab in sorted_ab_sum:
-        for i in range(bound, length_of_sum):
-            if -ab == sorted_cd_sum[length_of_sum - i - 1]:
-                count += 1
-                bound = i
-                break;
-    print(count)
+    for ab, count in ab_sum.items():
+        if -ab in cd_sum:
+            result += count * cd_sum[-ab] 
+    
+    print(result)
 
 main()
